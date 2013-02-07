@@ -77,27 +77,15 @@ def separate_sentences(tweet):
   '''
   symbols = ['.', '!', '?']
   for sym in symbols:
-    processed = new_line(tweet, sym)
+    processed = edit_line_r(tweet, sym, '\n')
   return '|\n' + processed.rstrip() + '\n'
 
   
 def tokenize(tweet):
   '''Returns a tweet where each token is separated by a space
   '''
-  words = tweet.split(' ')
-  processed = ''
-  for i in range(len(words)):
-    exclaim = words[i].find('!')
-    question = words[i].find('?')
-    period = words[i].find('.')
-    if exclaim != -1:
-      processed += words[i][:exclaim] + ' ' + words[i][exclaim:]
-    if question != -1:
-      processed += words[i][:question] + ' ' + words[i][question:]
-    if period != -1:
-      processed += words[i][:period] + ' ' + words[i][period:]
-  return
-  
+  tweet = re.sub("'(?!t)", " '", tweet)
+  return re.sub("n't", " n't", tweet)
  
 def twtt(raw_file, processed_file):
   ''' Takes a file contain raw tweets (raw_file), processes each tweet, 
@@ -113,7 +101,7 @@ def twtt(raw_file, processed_file):
     line = remove_links(line) #urls removed
     line = remove_twitter_tags(line) #hash tags and @-tags removed
     line = separate_sentences(line)
-    #line = tokenize(line)
+    line = tokenize(line)
     processed.write(line)
   processed.write('|')  
   raw.close()
