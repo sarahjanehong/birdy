@@ -1,16 +1,4 @@
 # TWeet Tokenize and Tag (TWTT)
-# Each sentence within a tweet is on its own line.
-#   - This will require detecting end-of-sentence punctuation. Some punctuation 
-#     does not end a sentence; see standard abbreviations here: 
-#     /u/cs401/Wordlists/abbrev.english. 
-#     It can be difficult to detect when an abbreviation ends a sentence; 
-#     e.g., in "Go to St. John's St. I'll be there.", the first period is used in 
-#     an abbreviation, the last period ends a sentence, and the second period is 
-#     used both in an abbreviation and an end-of-sentence. You are not expected
-#     to write a `perfect' pre-processor here (none exists!), but merely to use
-#     your best judgment in writing heuristics; 
-#     see section 4.2.4 of the Manning and Schutze text for ideas.
-#
 # Ellipsis (i.e., `...'), and other kinds of multiple punctuation 
 #  (e.g., `!!!') are not split.
 #
@@ -50,6 +38,18 @@ d = {'&amp;':'&',
     '&trade;':'trademark'
   }
 
+# parse the text files containing popular abbreviations
+def strip_new_line(words):
+  L = []
+  for word in words:
+    index = word.find('\n')
+    L.append(word[:index])
+  return L
+  
+abbrev_english = strip_new_line(open('./abbrev.english', 'r').readlines())
+pn_abbrev_english = strip_new_line(open('./pn_abbrev.english', 'r').readlines())
+ 
+
 def remove_html(tweet):
   ''' Returns a string (tweet) with all html tags and attributes removed
   tweet: a single tweet (type str)
@@ -85,12 +85,32 @@ def remove_twitter_tags(tweet):
     tweet = re.sub(regex, replace, tweet, 1)
   return tweet
  
- 
- 
- 
- 
- 
- 
+def separate_sentences(tweet):
+  '''Returns a string where each sentence within a tweet is on its own line.
+  Requires detecting End-of-Sentence punctuation.
+  '''
+  words = tweet.split(' ')
+  processed = ''
+  for i in range(len(words)):
+    period = words[i].find('.')
+    exclaim = words[i].find('!')
+    question = words[i].find('?')
+    if period != -1 and (words[i] not in abbrev_english or words[i] not in pn_abbrev_english):
+      processed += words[i] + '\n'
+    elif exclaim != -1 or question != -1:
+      processed += words[i] + '\n'
+    else:
+      processed += words[i] + ' '
+
+  return '|\n' + processed.rstrip() + '\n'
+
+  
+def tokenize(tweet):
+  '''Returns a tweet where each token is separated by a space
+  '''
+
+  return
+  
  
 def twtt(raw_file, processed_file):
   ''' Takes a file contain raw tweets (raw_file), processes each tweet, 
@@ -98,17 +118,17 @@ def twtt(raw_file, processed_file):
   raw_file: the input raw tweet file (.txt)
   processed_file: the output tokenized and tagged tweet file (.twt) 
   '''
-  tagger = nlp.NLPlib()
   raw = open(raw_file, 'r')
   processed = open(processed_file, 'w')
-
   for line in raw:
     line = remove_html(line) #html removed
-    line = convert_to_ascii(line)
+    line = convert_to_ascii(line) #html character codes changed to ascii 
     line = remove_links(line) #urls removed
-    line = remove_twitter_tags(line) # hash tags and @-tags removed
+    line = remove_twitter_tags(line) #hash tags and @-tags removed
+    line = separate_sentences(line)
+    line = tokenize(line)
     processed.write(line)
-    
+  processed.write('|')  
   raw.close()
   processed.close()
   
@@ -117,5 +137,5 @@ if __name__ == '__main__':
   raw_file = sys.argv[1]
   processed_file = sys.argv[2]
   twtt(raw_file, processed_file)
-  print "hello"
+  print "finished processing and tagging file"
 
