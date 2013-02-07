@@ -1,5 +1,4 @@
 # TWeet Tokenize and Tag (TWTT)
-
 import re
 import sys
 sys.path.append('./tagger') # to use NLPlib
@@ -62,8 +61,9 @@ def separate_sentences(tweet):
   Requires detecting End-of-Sentence punctuation.
   '''
   symbols = ['.', '!', '?']
+  processed = tweet
   for sym in symbols:
-    processed = edit_line_r(tweet, sym, '\n')
+    processed = edit_line_r(processed, sym, '\n')
   return processed
 
 def space(tweet):
@@ -79,7 +79,7 @@ def tokenize(tweet):
   '''Returns a tweet where each token is separated by a space
   '''
   tweet = re.sub("'(?!t)", " '", tweet)
-  return re.sub("n't", " n't", tweet).rstrip("")
+  return re.sub("n't", " n't", tweet)
   
 def tag(tweet):
   '''Returns a string where each token is tagged using NLPlib in the form of:
@@ -108,9 +108,9 @@ def twtt(raw_file, processed_file):
     line = remove_links(line) #urls removed
     line = remove_twitter_tags(line) #hash tags and @-tags removed
     line = separate_sentences(line)
-    line = space(line)
-    line = tokenize(line)
-    line = tag(line)
+    #line = space(line)
+    #line = tokenize(line)
+    #line = tag(line)
     processed.write(line)
     
   processed.write('|')
