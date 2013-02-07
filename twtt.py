@@ -1,7 +1,4 @@
 # TWeet Tokenize and Tag (TWTT)
-# Ellipsis (i.e., `...'), and other kinds of multiple punctuation 
-#  (e.g., `!!!') are not split.
-#
 # Each token, including punctuation and clitics, is separated by spaces.
 #   - Clitics are contracted forms of words, such as n't, that are concatenated 
 #     with the previous word.
@@ -21,6 +18,7 @@ import re
 import sys
 sys.path.append('./tagger') # to use NLPlib
 import NLPlib as nlp
+from helper import * # helper funcions
 
 # some popular html character codes
 d = {'&amp;':'&', 
@@ -37,19 +35,7 @@ d = {'&amp;':'&',
     '&reg;':'registered trademark',
     '&trade;':'trademark'
   }
-
-# parse the text files containing popular abbreviations
-def strip_new_line(words):
-  L = []
-  for word in words:
-    index = word.find('\n')
-    L.append(word[:index])
-  return L
-  
-abbrev_english = strip_new_line(open('./abbrev.english', 'r').readlines())
-pn_abbrev_english = strip_new_line(open('./pn_abbrev.english', 'r').readlines())
  
-
 def remove_html(tweet):
   ''' Returns a string (tweet) with all html tags and attributes removed
   tweet: a single tweet (type str)
@@ -84,31 +70,32 @@ def remove_twitter_tags(tweet):
     replace = match.group('tag_name') + match.group('end')
     tweet = re.sub(regex, replace, tweet, 1)
   return tweet
- 
+   
 def separate_sentences(tweet):
   '''Returns a string where each sentence within a tweet is on its own line.
   Requires detecting End-of-Sentence punctuation.
   '''
-  words = tweet.split(' ')
-  processed = ''
-  for i in range(len(words)):
-    period = words[i].find('.')
-    exclaim = words[i].find('!')
-    question = words[i].find('?')
-    if period != -1 and (words[i] not in abbrev_english or words[i] not in pn_abbrev_english):
-      processed += words[i] + '\n'
-    elif exclaim != -1 or question != -1:
-      processed += words[i] + '\n'
-    else:
-      processed += words[i] + ' '
-
+  symbols = ['.', '!', '?']
+  for sym in symbols:
+    processed = new_line(tweet, sym)
   return '|\n' + processed.rstrip() + '\n'
 
   
 def tokenize(tweet):
   '''Returns a tweet where each token is separated by a space
   '''
-
+  words = tweet.split(' ')
+  processed = ''
+  for i in range(len(words)):
+    exclaim = words[i].find('!')
+    question = words[i].find('?')
+    period = words[i].find('.')
+    if exclaim != -1:
+      processed += words[i][:exclaim] + ' ' + words[i][exclaim:]
+    if question != -1:
+      processed += words[i][:question] + ' ' + words[i][question:]
+    if period != -1:
+      processed += words[i][:period] + ' ' + words[i][period:]
   return
   
  
@@ -126,7 +113,7 @@ def twtt(raw_file, processed_file):
     line = remove_links(line) #urls removed
     line = remove_twitter_tags(line) #hash tags and @-tags removed
     line = separate_sentences(line)
-    line = tokenize(line)
+    #line = tokenize(line)
     processed.write(line)
   processed.write('|')  
   raw.close()
