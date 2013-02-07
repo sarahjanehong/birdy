@@ -1,18 +1,4 @@
 # TWeet Tokenize and Tag (TWTT)
-# Each token, including punctuation and clitics, is separated by spaces.
-#   - Clitics are contracted forms of words, such as n't, that are concatenated 
-#     with the previous word.
-#   - Note that the possessive 's has its own tag and is distinct from the 
-#     clitic 's, but nonetheless must be separated by a space; likewise, the 
-#     possessive apostrophe on plurals must be separated.
-#
-# Each token is tagged with its part-of-speech.
-#   - A tagged token consists of a word, the `/' symbol, and the tag 
-#    (e.g., dog/NN). See below for information on how to use the tagging module.
-#    The tagger can make mistakes.
-#
-# Between each tweet is the pipe symbol '|', which occurs on its own line.
-#   - Pipes are supposed to occur at the beginning and end of each normalized file
 
 import re
 import sys
@@ -78,15 +64,36 @@ def separate_sentences(tweet):
   symbols = ['.', '!', '?']
   for sym in symbols:
     processed = edit_line_r(tweet, sym, '\n')
-  return '|\n' + processed.rstrip() + '\n'
+  return processed
 
-  
+def space(tweet):
+  ''' Returns a tweet with spaces between punctuation '''
+  regex = '(?P<prefix>\w+?)(?P<end>!+|\?+|\.+)' # ..., !!, ?? will be kept together, but spaced from whatever is before it
+  while len(re.findall(regex, tweet)) > 0:
+    match = re.search(regex, tweet)
+    replace = match.group('prefix') + ' ' + match.group('end')
+    tweet = re.sub(regex, replace, tweet, 1)
+  return tweet
+
 def tokenize(tweet):
   '''Returns a tweet where each token is separated by a space
   '''
   tweet = re.sub("'(?!t)", " '", tweet)
-  return re.sub("n't", " n't", tweet)
- 
+  return re.sub("n't", " n't", tweet).rstrip("")
+  
+def tag(tweet):
+  '''Returns a string where each token is tagged using NLPlib in the form of:
+  Meet/VB me/PRP today/NN at/IN the/DT FEC/NN in/IN DC/NN at/IN 4/NN ./.
+  '''
+  tagged = []
+  tagger = nlp.NLPlib()
+  sent = tweet.split(' ')
+  tags = tagger.tag(sent)
+  for i in range(len(tags)):
+    tagged.append(sent[i] + '/' + tags[i])
+  processed = ' '.join(tagged)
+  return '|\n' + processed
+  
 def twtt(raw_file, processed_file):
   ''' Takes a file contain raw tweets (raw_file), processes each tweet, 
   and saves it in an output file (processed_file)
@@ -101,9 +108,12 @@ def twtt(raw_file, processed_file):
     line = remove_links(line) #urls removed
     line = remove_twitter_tags(line) #hash tags and @-tags removed
     line = separate_sentences(line)
+    line = space(line)
     line = tokenize(line)
+    line = tag(line)
     processed.write(line)
-  processed.write('|')  
+    
+  processed.write('|')
   raw.close()
   processed.close()
   
