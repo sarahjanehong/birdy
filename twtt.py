@@ -87,12 +87,14 @@ def tag(tweet):
   '''
   tagged = []
   tagger = nlp.NLPlib()
-  sent = tweet.split(' ')
-  tags = tagger.tag(sent)
-  for i in range(len(tags)):
-    tagged.append(sent[i] + '/' + tags[i])
-  processed = ' '.join(tagged)
-  return '|\n' + processed
+  sentences = tweet.split('\n')
+  for i in range(len(sentences)): #go through each sentence in a tweet
+    sent = sentences[i].split(' ')
+    tags = tagger.tag(sent)
+    for i in range(len(tags)):
+      tagged.append(sent[i] + '/' + tags[i]) #tag each token in the sentence
+    processed = ' '.join(tagged) #join into a processed tweet
+  return '|\n' + processed.rstrip() + '\n'
   
 def twtt(raw_file, processed_file):
   ''' Takes a file contain raw tweets (raw_file), processes each tweet, 
@@ -108,9 +110,9 @@ def twtt(raw_file, processed_file):
     line = remove_links(line) #urls removed
     line = remove_twitter_tags(line) #hash tags and @-tags removed
     line = separate_sentences(line)
-    #line = space(line)
-    #line = tokenize(line)
-    #line = tag(line)
+    line = space(line)
+    line = tokenize(line)
+    line = tag(line)
     processed.write(line)
     
   processed.write('|')
