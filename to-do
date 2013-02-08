@@ -1,0 +1,6 @@
+To do:
+
+- ! or ? followed by a " should not be a \n
+- deal with commas
+- deal with emoticons and other ascii icons
+  e.g. <3 :) :-)
