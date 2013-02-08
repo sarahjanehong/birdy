@@ -39,30 +39,30 @@ third = open('./Third-person', 'r').read().replace('\n', '/|')
 slang = open('./Slang', 'r').read().replace('\n', '/|')
 # emoticons = open('./Emoticons', 'r').read().replace('\n', '/|')
 
-features = {
-  'first_person numeric': first,
-  'second_person numeric': second,
-  'third_person numeric': third,
-  'conjunct numeric': '/CC',
-  'past_tense_verb numeric': '/VBD',
+features = [
+  ['first_person numeric', first],
+  ['second_person numeric', second],
+  ['third_person numeric', third],
+  ['conjunct numeric', '/CC'],
+  ['past_tense_verb numeric', '/VBD'],
   # simple future - www.englishpage.com/verbpage/simplefuture.html
-  'furture_tense_verb numeric': "will/MD|'ll/MD|going/VBG to/TO \w+/VB|gonna/VBG \w+/VB", 
-  'commas numeric': ',/',
-  'colons_semicolons numeric': '\:/|\;/',
-  'dashes numeric': '-/|w+?-w+?/',
-  'parentheses numeric': '\(/\(|\)/\)',
-  'ellipses numeric': '.\.\./:|\.*?/CD',
-  'common_nouns numeric': '/NN|/NNS',
-  'proper_nouns numeric': '/NNP|/NNPS',
-  'adverbs numeric': '/RBR|/RB|/RBS',
-  'wh_words numeric': '/WDT|/WP|/WP$|/WRB',
-  'slang numeric': slang,
+  ['furture_tense_verb numeric', "will/MD|'ll/MD|going/VBG to/TO \w+/VB|gonna/VBG \w+/VB"], 
+  ['commas numeric', ',/'],
+  ['colons_semicolons numeric', '\:/|\;/'],
+  ['dashes numeric', '-/|w+?-w+?/'],
+  ['parentheses numeric', '\(/\(|\)/\)'],
+  ['ellipses numeric', '.\.\./:|\.*?/CD'],
+  ['common_nouns numeric', '/NN|/NNS'],
+  ['proper_nouns numeric', '/NNP|/NNPS'],
+  ['adverbs numeric', '/RBR|/RB|/RBS'],
+  ['wh_words numeric', '/WDT|/WP|/WP$|/WRB'],
+  ['slang numeric', slang],
   #'emoticons numeric' : emoticons,
-  'uppercase numeric': '[A-Z]{2,}', # all uppercase (at least 2 letters long)
-  'avg_sentence_len': '',
-  'avg_token_len': '',
-  'count_sentences': ''
-}
+  ['uppercase numeric', '[A-Z]{2,}'], # all uppercase (at least 2 letters long)
+  ['avg_sentence_len numeric'],
+  ['avg_token_len numeric'],
+  ['count_sentences numeric']
+]
 
 def avg_sentence_len(tweet, arff):
   ''' Writes the average number of tokens in each sentence of a tweet into ARFF file '''
@@ -103,12 +103,13 @@ def count_sentences(tweet, arff):
   arff.write(str(len(sentences)) + ',')
 
 def count_features(tweet, arff):
-  ''' Writes the number of occurences (counts) for each feature (dictionary features)
+  ''' Writes the number of occurences (counts) for each feature
   for a tweet into ARFF file'''
-  for key in features:
-    regex = features[key]
-    count = len(re.findall(regex, tweet, re.IGNORECASE))
-    arff.write(str(count) + ',')
+  for feature in features:
+    if len(feature) == 2:
+      regex = feature[1]
+      count = len(re.findall(regex, tweet, re.IGNORECASE))
+      arff.write(str(count) + ',')
 
 def write_relation(arff, name):
   ''' Writes the relation name for the ARFF file '''
@@ -118,7 +119,7 @@ def write_relation(arff, name):
 def write_attr(arff):
   ''' Writes the attributes (keys of the features dictionary) for the ARFF file '''
   for feature in features:
-    arff.write('@attribute ' + feature + '\n')
+    arff.write('@attribute ' + feature[0] + '\n')
 
 def write_attr_class(arff):
   ''' Writes the attribute class for the ARFF file '''
@@ -140,9 +141,9 @@ def write_data(arff):
     
     if limit > 0: #checks for read limit on file
       if limit < len(tweets):
-	tweets = tweets[:limit]
+	       tweets = tweets[:limit]
       else:
-	print "limit out of bounds"
+	       print "limit out of bounds"
 	
     for tweet in tweets: #aggregating counts for each feature on each tweet
       count_features(tweet, arff)
