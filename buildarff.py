@@ -2,133 +2,118 @@
 Gathering Feature Information:
 Takes tokenized and tagged tweets and builds an ARFF datafile 
 (Attribute-Relation File Format) that will be used to classify tweets
-----------------------------------------------------------------------------------------------------
-Feature extraction is basically the process of analyzing the
-preprocessed data in terms of variables that are indicative of the source of the data.
-----------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+e.g. Weather ARFF file
+@relation weather
 
-The next n arguments represent the n classes you are using; 
-classes may contain one or more .twt files joined by pluses (+). 
+@attribute outlook {sunny, overcast, rainy}
+@attribute temperature numeric
+@attribute humidity numeric
+@attribute windy {TRUE, FALSE}
+@attribute play {yes, no}
 
-In order to specify the name of the class in the arff, a class may be prefaced by an optional class name followed by a colon (:)
-If there is no classname, the entire class definition is taken as the class name. 
-The last argument is the output arff file.
-
-For example:
-buildarff.py -500 justinbieber.twt britneyspears.twt jbbs.arff
-buildarff.py pop:rihanna.twt+katyperry.twt news:bbcnews.twt+cnn.twt popvnews.arff
-----------------------------------------------------------------------------------------------------
-For each tweet, you need to extract 20 features and write these to the arf file. 
-These features are listed in Table 3. 
-
-Many of these involve counting tokens in a tweet that have certain characteristics that can be discerned from its tag. 
-
-For example, counting the number of adverbs in a tweet involves counting the number of tokens that have been tagged as RB, RBR, or RBS. 
-
-Table 4 explicitly defines some of the features in Table 3; 
-these definitions are available on CDF in the directory /u/cs401/Wordlists/. 
-You may copy and modify these files, but do not change their fienames. 
-Be careful about capitalization; in all cases you should count both capitalized and lower case forms 
-(e.g., both he and He count towards the number of third person pronouns).
-
-
-When your feature extractor works, build an arf file, cnncbc.arff, that classifies CNN and CBC tweets using the first 100 tweets from each source.
-
-
-TABLE 3 (20 feature)
-Counts:
-| First person pronouns
-| Second person pronouns
-| Third person pronouns
-| Coordinating conjunctions
-| Past-tense verbs
-| Future-tense verbs
-| Commas
-| Colons and semi-colons
-| Dashes
-| Parentheses
-| Ellipses
-| Common nouns
-| Proper nouns
-| Adverbs
-| wh-words
-| Modern slang acroynms
-| Words all in upper case (at least 2 letters long)
-Average length of sentences (in tokens)
-Average length of tokens, excluding punctuation tokens (in characters)
-Number of sentences
-
-
-Table 4:
-First person:
-I, me, my, mine, we, us, our, ours
-Second person:
-you, your, yours, u, ur, urs
-Third person:
-he, him, his, she, her, hers, it, its, they, them, their, theirs
-Future Tense:
-'ll, will, gonna, going+to+VB
-Common Nouns:
-NN, NNS
-Proper Nouns:
-NNP, NNPS
-Adverbs:
-RB, RBR, RBS
-wh-words :
-WDT, WP, WP$, WRB
-Modern slang acronyms:
-smh, fwb, lmfao, lmao, lms, tbh, ro, wtf, b, wyd, lylc, brb, atm, imao, sml, btw,
-bw, imho, fyi, ppl, sob, ttyl, imo, ltr, thx, kk, omg, ttys, afn, bbs, cya, ez, f2f, gtr,
-ic, jk, k, ly, ya, nm, np, plz, ru, so, tc, tmi, ym, ur, u, sol
-
-
-
+@data
+sunny,85,85,FALSE,no
+sunny,80,90,TRUE,no
+overcast,83,86,FALSE,yes
+rainy,70,96,FALSE,yes
+rainy,68,80,FALSE,yes
+rainy,65,70,TRUE,no
+overcast,64,65,TRUE,yes
+sunny,72,95,FALSE,no
+sunny,69,70,FALSE,yes
+rainy,75,80,FALSE,yes
+sunny,75,70,TRUE,yes
+overcast,72,90,TRUE,yes
+overcast,81,75,FALSE,yes
+rainy,71,91,TRUE,no
 '''
+
+import string
+import re
 import sys
 
 
+def write_relation(arff, name):
+  relation = name + '\n\n' # takes arff filename as name of the relation
+  arff.write('@relation ' + relation)
+
+def write_attr(arff, features):
+  for f in features:
+    arff.write('@attribute ' + f[0] + '\n')
+
+def write_attr_class(arff, features):
+  arff.write('@attribute classes {')
+  for i in range(len(_class)):
+    if i == len(_class)-1: 
+        arff.write(_class)
+    else:
+      arff.write(_class[c] + ', ')
+  arff.write('} \n\n')
+
+def write_data(arff):
+  arff.write('@data\n\n')
+  files = iter(_tweets) #gets the keys (twt files) from _tweets
+  for twt in files:
+      twtfile = open(twt, 'r')
+      # split file by tweets in order to apply limit
+      # get rid of starting "|\n"
+      tweets = twtfile.read()[2:].split('\n|\n')
+      if limit > 0:
+        if limit < len(twt):
+          tweets = tweets[:limit]
+        else:
+          print "limit out of bounds"
+
+      for t in tweets:
+          for f in features:
+              if len(f) > 2:
+                  f[1](t, arff, f[2])
+                  arff.write(',')
+              else:
+                  f[1](t, arff)
+                  arff.write(',')
+              
+          # write class name
+          arff.write(twts[twt] + '\n')
 
 
-
-
-
-
-
-def feature():
-  return
-  
-
-
-  
-  
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
     exit("Not enough arguments: requires .twt file and output ARFF file")
 
   else:
+    _class = []
+    _tweets = {}
     prog = sys.argv.pop(0)
-    arff = sys.argv.pop() # the output file
-    
+
     # determine no. of tweets from each .twt that'll be used to build the arff
     if sys.argv[0][0] == '-':
       limit = int(sys.argv[0][1:]) 
       sys.argv.pop(0) 
     else:
       limit = -1
-    
-    for arg in sys.argv:
-      fn = arg.split(':')
-      if len(fn) > 1:
-	_class = fn.pop(0) #get classname if specified
 
-      twt = fn[0].split('+')
-      for i in twt
-	
+    # go through each twt
+    for arg in sys.argv:
+      inputs = arg.split(':')
+      if len(inputs) > 1:
+        _class.append(inputs.pop(0)) #get classname if specified
+      else:
+        _class.append(inputs[0]) #entire class defn is classname
+
+      twts = inputs[0].split('+')
+      for t in twts:
+        _tweets[t] = _class[-1] #add filename as key with class as the value
+
+    f = sys.argv.pop() #output file
+    arff = open(f, 'w')
+    write_relation(arff, f.split('.')[0])
+    write_attr(arff)
+    write_attr_class(arff)
+    write_data(arff)
+
+
+
       
-	
-      
-      
-      
-      #buildarff.py -500 justinbieber.twt britneyspears.twt jbbs.arff
-  #buildarff.py pop:rihanna.twt+katyperry.twt news:bbcnews.twt+cnn.twt popvnews.arff
