@@ -61,7 +61,7 @@ def separate_sentences(tweet):
   Requires detecting End-of-Sentence punctuation.
   '''
   symbols = ['.', '!', '?']
-  processed = tweet
+  processed = tweet.rstrip()
   for sym in symbols:
     processed = edit_line_r(processed, sym, '\n')
   return processed
@@ -76,8 +76,7 @@ def space(tweet):
   return tweet
 
 def tokenize(tweet):
-  '''Returns a tweet where each token is separated by a space
-  '''
+  '''Returns a tweet where each token is separated by a space '''
   tweet = re.sub("'(?!t)", " '", tweet)
   return re.sub("n't", " n't", tweet)
   
@@ -85,15 +84,16 @@ def tag(tweet):
   '''Returns a string where each token is tagged using NLPlib in the form of:
   Meet/VB me/PRP today/NN at/IN the/DT FEC/NN in/IN DC/NN at/IN 4/NN ./.
   '''
-  tagged = []
   tagger = nlp.NLPlib()
-  sentences = tweet.split('\n')
+  sentences = tweet.rstrip().split('\n')
+  processed = ''
   for i in range(len(sentences)): #go through each sentence in a tweet
-    sent = sentences[i].split(' ')
+    sent = sentences[i].strip().split(' ')
     tags = tagger.tag(sent)
+    tagged = []
     for i in range(len(tags)):
       tagged.append(sent[i] + '/' + tags[i]) #tag each token in the sentence
-    processed = ' '.join(tagged) #join into a processed tweet
+    processed += ' '.join(tagged) + '\n' #join into a processed tweet
   return '|\n' + processed.rstrip() + '\n'
   
 def twtt(raw_file, processed_file):
@@ -124,5 +124,5 @@ if __name__ == '__main__':
   raw_file = sys.argv[1]
   processed_file = sys.argv[2]
   twtt(raw_file, processed_file)
-  print "finished processing and tagging file"
+  print "finished processing and tagging tweets"
 

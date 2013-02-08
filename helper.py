@@ -14,7 +14,8 @@ def edit_line_r(tweet, sym, add):
 	  processed += word + add + ' '
       else: #not the last character in word
 	next_char = word[index+1]
-	if not(next_char == '!' or next_char == '?'): #case of "?!?!?!?!????!"
+	if not(next_char == '!' or next_char == '?' or next_char == '\n'): #case of "?!?!?!?!????!"
+
 	  if (word not in abbrev_english or word not in pn_abbrev_english): #case of "e.g."
 	    processed += word[:index+1] + add + word[index+1:] + ' '
 	else:
