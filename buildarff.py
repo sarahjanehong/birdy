@@ -58,38 +58,70 @@ features = {
   'wh_words numeric': '/WDT|/WP|/WP$|/WRB',
   'slang numeric': slang,
   #'emoticons numeric' : emoticons,
-  'uppercase numeric': '[A-Z]{2,}' # all uppercase (at least 2 letters long)
+  'uppercase numeric': '[A-Z]{2,}', # all uppercase (at least 2 letters long)
+  'avg_sentence_len': '',
+  'avg_token_len': '',
+  'count_sentences': ''
 }
 
 def avg_sentence_len(tweet, arff):
-  return
+  ''' Writes the average number of tokens in each sentence of a tweet into ARFF file '''
+  num_token = 0
+  num_sent = 0
+  sentences = tweet.split('\n')
+  for sentence in sentences:
+    tokens = sentence.split()
+    for token in tokens:
+      token = token.split('/')
+      num_token += 1
+    num_sent += 1
+  if num_sent != 0: #ensure no division by zero
+    avg = num_token / num_sent
+    arff.write(str(avg) + ',')
+  else:
+    arff.write('0,')    
   
 def avg_token_len(tweet, arff):
-  return
+  ''' Writes the average number of characters in each token of a tweet into ARFF file '''
+  num_chars = 0
+  num_tokens = 0
+  sentences = tweet.split()
+  for token in sentences:
+    token = token.split('/')
+    if len(token) > 2 and token[0].isalpha():
+      num_chars += len(token[0])
+      num_tokens += 1
+  if num_tokens != 0: #ensure no division by zero
+    avg = num_chars / num_tokens
+    arff.write(str(avg) + ',')
+  else:
+    arff.write('0,')
   
 def count_sentences(tweet, arff):
-  return
+  ''' Writes the number of sentences in a tweet into ARFF file '''
+  sentences = tweet.split('\n')
+  arff.write(str(len(sentences)) + ',')
 
-def process(tweet, arff, regex):
-  return
-  
-# counts the number of occurences for each feature, for a tweet
 def count_features(tweet, arff):
+  ''' Writes the number of occurences (counts) for each feature (dictionary features)
+  for a tweet into ARFF file'''
   for key in features:
     regex = features[key]
     count = len(re.findall(regex, tweet, re.IGNORECASE))
     arff.write(str(count) + ',')
 
-  
 def write_relation(arff, name):
+  ''' Writes the relation name for the ARFF file '''
   relation = name + '\n\n' #takes arff filename as name of the relation
   arff.write('@relation ' + relation)
 
 def write_attr(arff):
+  ''' Writes the attributes (keys of the features dictionary) for the ARFF file '''
   for feature in features:
     arff.write('@attribute ' + feature + '\n')
 
 def write_attr_class(arff):
+  ''' Writes the attribute class for the ARFF file '''
   arff.write('@attribute class {')
   for i in range(len(_class)):
     if i == len(_class)-1: 
@@ -99,6 +131,7 @@ def write_attr_class(arff):
   arff.write('} \n\n')
 
 def write_data(arff):
+  ''' Writes the data for the ARFF file '''
   arff.write('@data\n')
   for f in _tweets: #for each key (twt files) from _tweets
     twt = open(f, 'r')
@@ -113,8 +146,10 @@ def write_data(arff):
 	
     for tweet in tweets: #aggregating counts for each feature on each tweet
       count_features(tweet, arff)
+      avg_sentence_len(tweet, arff)
+      avg_token_len(tweet, arff)
+      count_sentences(tweet, arff)
       arff.write(_tweets[f] + '\n')
-
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
