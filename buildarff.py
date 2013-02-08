@@ -28,21 +28,19 @@ overcast,72,90,TRUE,yes
 overcast,81,75,FALSE,yes
 rainy,71,91,TRUE,no
 '''
-
-import string
-import re
 import sys
-
+import re
+from helper import *
 
 def write_relation(arff, name):
-  relation = name + '\n\n' # takes arff filename as name of the relation
+  relation = name + '\n\n' #takes arff filename as name of the relation
   arff.write('@relation ' + relation)
 
 def write_attr(arff, features):
-  for f in features:
-    arff.write('@attribute ' + f[0] + '\n')
+  for feature in features:
+    arff.write('@attribute ' + feature[0] + '\n')
 
-def write_attr_class(arff, features):
+def write_attr_class(arff):
   arff.write('@attribute classes {')
   for i in range(len(_class)):
     if i == len(_class)-1: 
@@ -54,29 +52,22 @@ def write_attr_class(arff, features):
 def write_data(arff):
   arff.write('@data\n\n')
   files = iter(_tweets) #gets the keys (twt files) from _tweets
-  for twt in files:
-      twtfile = open(twt, 'r')
-      # split file by tweets in order to apply limit
-      # get rid of starting "|\n"
-      tweets = twtfile.read()[2:].split('\n|\n')
-      if limit > 0:
-        if limit < len(twt):
+  for f in files:
+      twt = open(f, 'r')
+      str_twt = twt.read()[2:] #reads entire file, and removes beginning pipe '|' delimiter
+      tweets = str_twt.split('\n|\n')
+      
+      if limit > 0: #checks for read limit on file
+        if limit < len(tweets):
           tweets = tweets[:limit]
         else:
           print "limit out of bounds"
 
-      for t in tweets:
-          for f in features:
-              if len(f) > 2:
-                  f[1](t, arff, f[2])
-                  arff.write(',')
-              else:
-                  f[1](t, arff)
-                  arff.write(',')
-              
-          # write class name
-          arff.write(twts[twt] + '\n')
-
+      for tweet in tweets: #aggregating counts for each feature on each tweet
+	for feature in features:
+	  apply_fn(feature, tweet, arff)
+	  arff.write(',')
+	arff.write(tweets[tweet] + '\n')
 
 
 if __name__ == '__main__':
@@ -88,7 +79,7 @@ if __name__ == '__main__':
     _tweets = {}
     prog = sys.argv.pop(0)
 
-    # determine no. of tweets from each .twt that'll be used to build the arff
+    # determine number of tweets from each .twt that'll be used to build the arff
     if sys.argv[0][0] == '-':
       limit = int(sys.argv[0][1:]) 
       sys.argv.pop(0) 
@@ -113,7 +104,4 @@ if __name__ == '__main__':
     write_attr(arff)
     write_attr_class(arff)
     write_data(arff)
-
-
-
-      
+    arff.close()

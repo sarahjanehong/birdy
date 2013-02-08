@@ -1,4 +1,4 @@
-''' Helper Functions for twtt.py'''
+''' Helper Functions for twtt.py and buildarff.py'''
 
 # adds "add" after "sym" occurs in "tweet"
 # uses rfind()
@@ -34,3 +34,12 @@ def strip_new_line(words):
   
 abbrev_english = strip_new_line(open('./abbrev.english', 'r').readlines())
 pn_abbrev_english = strip_new_line(open('./pn_abbrev.english', 'r').readlines())
+
+# applies the appropriate function to each tweet
+def apply_fn(feature, tweet, arff):
+  if len(feature) > 2:
+      feature[1](tweet, arff, feature[2])
+  else:
+      feature[1](tweet, arff)
+      
+      
