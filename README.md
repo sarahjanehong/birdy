@@ -14,14 +14,14 @@ twtt.py takes in unprocessed tweets and removes noise by
 - tagging each token with its part-of-speech
 
 To run twtt.py, from the terminal, type:
-python twtt.py TWEETS OUTPUT
+```python twtt.py TWEETS OUTPUT```
 
 where ...
 - TWEETS is the input file containing tweets (unprocessed) from Twitter from a particular user
 - OUTPUT is the output file (*.twt) where each tweet is parsed, tokenized and tagged
 
-e.g. python justinbieber justinbieber.twt
-
+e.g. 
+```python justinbieber justinbieber.twt```
 
 
 
@@ -53,7 +53,7 @@ The WEKA machine learning package will be used to classify tweets given the .arf
 
 
 To run buildarff.py, from the terminal, type:
-python buildarff.py -X CLASS:FILE CLASS:FILE+FILE+FILE ... OUTPUT
+```python buildarff.py -X CLASS:FILE CLASS:FILE+FILE+FILE ... OUTPUT```
 
 where ...
 - X denotes the number of tweets to read; exclude this if you wish to read all the tweets from each FILE
@@ -61,4 +61,4 @@ where ...
 - FILE is the parsed, tokenized and tagged file (.twt) produced from twtt.py; if there is more than one file for a given class, this is denoted by a + in between each file
 - OUTPUT the generated arff file (*.arff)
 
-e.g. python buildarff.py pop:justinbeiber.twt+katyperry.twt+ladygaga.twt news:cnn.twt+bbcnews.twt+nytimes.twt POPvsNEWS.arff
+e.g. ```python buildarff.py pop:justinbeiber.twt+katyperry.twt+ladygaga.twt news:cnn.twt+bbcnews.twt+nytimes.twt POPvsNEWS.arff```
