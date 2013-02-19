@@ -52,7 +52,6 @@ The WEKA machine learning package will be used to classify tweets given the .arf
 
 
 To run buildarff.py, from the terminal, type:
-
 python buildarff.py -X CLASS:FILE CLASS:FILE+FILE+FILE ... OUTPUT
 
 where ...
@@ -62,4 +61,4 @@ FILE is the parsed, tokenized and tagged file (.twt) produced from twtt.py; if t
      file for a given class, this is denoted by a + in between each file
 OUTPUT the generated arff file (*.arff)
 
-e.g. python buildarff.py pop:justinbeiber.twt+britneyspears.twt+katyperry.twt+ladygaga.twt news:cnn.twt+bbcnews.twt+nytimes.twt POPvsNEWS.arff
+e.g. python buildarff.py pop:justinbeiber.twt+katyperry.twt+ladygaga.twt news:cnn.twt+bbcnews.twt+nytimes.twt POPvsNEWS.arff
