@@ -32,8 +32,8 @@ def strip_new_line(words):
     L.append(word[:index])
   return L
   
-abbrev_english = strip_new_line(open('./abbrev.english', 'r').readlines())
-pn_abbrev_english = strip_new_line(open('./pn_abbrev.english', 'r').readlines())
+abbrev_english = strip_new_line(open('./word_rules/abbrev.english', 'r').readlines())
+pn_abbrev_english = strip_new_line(open('./word_rules/pn_abbrev.english', 'r').readlines())
 
 
       

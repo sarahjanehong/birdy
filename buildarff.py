@@ -33,10 +33,10 @@ import sys
 import re
 from helper import *
 
-first = open('./First-person', 'r').read().replace('\n', '/|')
-second = open('./Second-person', 'r').read().replace('\n', '/|')
-third = open('./Third-person', 'r').read().replace('\n', '/|')
-slang = open('./Slang', 'r').read().replace('\n', '/|')
+first = open('./word_rules/First-person', 'r').read().replace('\n', '/|')
+second = open('./word_rules/Second-person', 'r').read().replace('\n', '/|')
+third = open('./word_rules/Third-person', 'r').read().replace('\n', '/|')
+slang = open('./word_rules/Slang', 'r').read().replace('\n', '/|')
 # emoticons = open('./Emoticons', 'r').read().replace('\n', '/|')
 
 features = [
