@@ -17,8 +17,8 @@ To run twtt.py, from the terminal, type:
 python twtt.py TWEETS OUTPUT
 
 where ...
-TWEETS is the input file containing tweets (unprocessed) from Twitter from a particular user
-OUTPUT is the output file (*.twt) where each tweet is parsed, tokenized and tagged
+- TWEETS is the input file containing tweets (unprocessed) from Twitter from a particular user
+- OUTPUT is the output file (*.twt) where each tweet is parsed, tokenized and tagged
 
 e.g. python justinbieber justinbieber.twt
 
@@ -56,10 +56,9 @@ To run buildarff.py, from the terminal, type:
 python buildarff.py -X CLASS:FILE CLASS:FILE+FILE+FILE ... OUTPUT
 
 where ...
-X denotes the number of tweets to read; exclude this if you wish to read all the tweets from each FILE
-CLASS denotes the class (optional, else takes the file name)
-FILE is the parsed, tokenized and tagged file (.twt) produced from twtt.py; if there is more than one 
-     file for a given class, this is denoted by a + in between each file
-OUTPUT the generated arff file (*.arff)
+- X denotes the number of tweets to read; exclude this if you wish to read all the tweets from each FILE
+- CLASS denotes the class (optional, else takes the file name)
+- FILE is the parsed, tokenized and tagged file (.twt) produced from twtt.py; if there is more than one file for a given class, this is denoted by a + in between each file
+- OUTPUT the generated arff file (*.arff)
 
 e.g. python buildarff.py pop:justinbeiber.twt+katyperry.twt+ladygaga.twt news:cnn.twt+bbcnews.twt+nytimes.twt POPvsNEWS.arff
