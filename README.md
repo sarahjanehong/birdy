@@ -46,6 +46,7 @@ The features computed for each .twt files are the number of
 - wh-words
 - slang
 - all-caps
+
 as well as the average length of sentences for a tweet, the average length of tokens, and the number of sentences in a tweet.
 
 The WEKA machine learning package will be used to classify tweets given the .arff files.
