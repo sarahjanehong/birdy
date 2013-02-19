@@ -1,6 +1,7 @@
 There are two parts to this project, twtt.py and buildarff.py
 
 1. Preprocessing, tokenizing, and tagging parts-of-speech
+-------------------------------------------------------------------------------
 twtt.py takes in unprocessed tweets and removes noise by
 - removing all HTML tags and attributes
 - convert HTML character codes to ASCII equivalent (e.g. "&lt;" is changed to "<")
@@ -12,9 +13,22 @@ twtt.py takes in unprocessed tweets and removes noise by
 - each token, including punctuation and clitics, is separated by a space (e.g. "we've" changed to "we 've")
 - tagging each token with its part-of-speech
 
+To run twtt.py, from the terminal, type:
+python twtt.py TWEETS OUTPUT
+
+where ...
+TWEETS is the input file containing tweets (unprocessed) from Twitter from a particular user
+OUTPUT is the output file (*.twt) where each tweet is parsed, tokenized and tagged
+
+e.g. python justinbieber justinbieber.twt
+
+
+
+
 2. Feature extraction
-buildarff.py takes .twt files to build an ARFF datafile. The produced ARFF datafile 
-gathers feature information that will be used for the classification of tweets. 
+-------------------------------------------------------------------------------
+buildarff.py takes .twt files to build an ARFF datafile. The produced ARFF datafile gathers feature information that will be used for the classification of tweets. 
+
 The features computed for each .twt files are the number of
 - first person pronouns
 - second person pronouns
@@ -32,27 +46,12 @@ The features computed for each .twt files are the number of
 - wh-words
 - slang
 - all-caps
-as well as the average length of sentences for a tweet, the average length of tokens,
-and the number of sentences in a tweet.
+as well as the average length of sentences for a tweet, the average length of tokens, and the number of sentences in a tweet.
 
 The WEKA machine learning package will be used to classify tweets given the .arff files.
 
 
-To run twtt.py
--------------------------------------------------------------------------------
-From the terminal, type:
-
-python twtt.py TWEETS OUTPUT
-
-where ...
-TWEETS is the input file containing tweets (unprocessed) from Twitter from a particular user
-OUTPUT is the output file (*.twt) where each tweet is parsed, tokenized and tagged
-
-e.g. python justinbieber justinbieber.twt
-
-To run buildarff.py
--------------------------------------------------------------------------------
-From the terminal, type:
+To run buildarff.py, from the terminal, type:
 
 python buildarff.py -X CLASS:FILE CLASS:FILE+FILE+FILE ... OUTPUT
 
